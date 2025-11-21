@@ -273,7 +273,7 @@
                                 <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                                     <div class="bg-purple-500 h-full w-[18%] rounded-full"></div>
                                 </div>
-                                <p class="text-xs text-gray-500">AMD Ryzen 9 5950X (4 Cores)</p>
+                                <p class="text-xs text-gray-500">Intel Core i7-13700K (16 Cores)</p>
                             </div>
 
                             <!-- RAM Detail -->
@@ -310,7 +310,6 @@
                             <div class="p-4 rounded-xl bg-white/5 border border-white/5">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-sm text-gray-400">Network I/O</span>
-                                    <span class="text-xs text-blue-400 font-mono">Live</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <div class="flex items-center gap-2">
@@ -507,6 +506,30 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="confirm-backdrop"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-[#171717] border border-border rounded-2xl shadow-2xl max-w-sm w-full transform scale-95 opacity-0 transition-all duration-200" id="confirm-content">
+                <div class="p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-warning/10 text-warning flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2" id="confirm-title">Are you sure?</h3>
+                    <p class="text-sm text-gray-400 mb-6" id="confirm-message">This action cannot be undone.</p>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="closeConfirmModal()" class="flex-1 px-4 py-2 rounded-xl border border-border text-gray-400 hover:bg-white/5 hover:text-white transition">Cancel</button>
+                        <button id="confirm-yes-btn" class="flex-1 px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary-glow transition shadow-lg shadow-primary/20">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Navigation Logic
         function showPage(pageId) {
@@ -569,11 +592,59 @@
             }, 200);
         }
 
-        function confirmAction(action) {
-            if(confirm('Are you sure you want to ' + action + ' the server?')) {
-                console.log('Executing: ' + action);
-                closePowerModal();
+        // Confirmation Modal Logic
+        const confirmModal = document.getElementById('confirmation-modal');
+        const confirmBackdrop = document.getElementById('confirm-backdrop');
+        const confirmContent = document.getElementById('confirm-content');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+
+        let pendingAction = null;
+
+        function openConfirmModal(action) {
+            pendingAction = action;
+            
+            // Customize text based on action
+            if (action === 'stop') {
+                confirmTitle.innerText = 'Stop Server?';
+                confirmMessage.innerText = 'This will disconnect all players and shut down the server.';
+                confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
+            } else if (action === 'restart') {
+                confirmTitle.innerText = 'Restart Server?';
+                confirmMessage.innerText = 'The server will reload configuration and plugins.';
+                confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
             }
+
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                confirmBackdrop.classList.remove('opacity-0');
+                confirmContent.classList.remove('scale-95', 'opacity-0');
+                confirmContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            confirmBackdrop.classList.add('opacity-0');
+            confirmContent.classList.remove('scale-100', 'opacity-100');
+            confirmContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                pendingAction = null;
+            }, 200);
+        }
+
+        confirmYesBtn.onclick = () => {
+            if (pendingAction) {
+                console.log('Executing: ' + pendingAction);
+                // Here you would actually call the backend
+            }
+            closeConfirmModal();
+            closePowerModal();
+        };
+
+        function confirmAction(action) {
+            openConfirmModal(action);
         }
 
         // Close modal on backdrop click
