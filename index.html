@@ -3,214 +3,633 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMX + Tailwind CSS</title>
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <title>FerrumC Dashboard</title>
+    
+    <!-- Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#050505] text-neutral-300 min-h-screen font-sans selection:bg-orange-500/30 selection:text-orange-200 antialiased overflow-x-hidden relative">
     
-    <!-- Ambient Background Glows -->
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-600/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[120px]"></div>
-    </div>
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <div class="relative z-10 max-w-7xl mx-auto p-8 lg:p-12">
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        background: '#0a0a0a',
+                        surface: '#171717',
+                        border: '#262626',
+                        primary: {
+                            DEFAULT: '#ea580c',
+                            glow: '#f97316'
+                        },
+                        success: '#10b981',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262626; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #404040; 
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(23, 23, 23, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
         
+        .glass-hover:hover {
+            background: rgba(23, 23, 23, 0.9);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Chart Tooltip Customization */
+        .apexcharts-tooltip {
+            background: #171717 !important;
+            border-color: #262626 !important;
+            color: #fff;
+        }
+        .apexcharts-tooltip-title {
+            background: #0a0a0a !important;
+            border-bottom: 1px solid #262626 !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        .apexcharts-text {
+            fill: #737373 !important;
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+        .apexcharts-gridline {
+            stroke: #262626 !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-gray-300 font-sans h-screen overflow-hidden flex selection:bg-primary selection:text-white">
+
+    <!-- Sidebar -->
+    <aside class="w-64 h-full border-r border-border bg-surface/50 flex flex-col glass z-20">
         <!-- Header -->
-        <header class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+        <div class="h-20 flex items-center px-6 border-b border-border gap-3">
+            <img src="https://raw.githubusercontent.com/ferrumc-rs/ferrumc/refs/heads/master/assets/data/icon.png" alt="FerrumC" class="w-10 h-10 rounded-lg shadow-lg shadow-primary/20">
             <div>
-                <h1 class="text-5xl font-bold text-white tracking-tight mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-neutral-500">
-                    FerrumC <span class="text-orange-500">UI</span>
-                </h1>
-                <p class="text-neutral-500 text-lg font-light">Next-generation dashboard design system.</p>
+                <h1 class="font-bold text-white tracking-tight text-lg">FerrumC</h1>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                    <span class="text-[10px] uppercase tracking-wider text-gray-500 font-mono">Online</span>
+                </div>
             </div>
-            <div class="flex gap-3">
-                <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-neutral-400 backdrop-blur-md">v2.0.0</span>
-                <span class="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-xs font-mono text-orange-400 backdrop-blur-md">Experimental</span>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 p-4 space-y-1">
+            <button onclick="showPage('overview')" id="nav-overview" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary border border-primary/20 transition-all group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                <span class="font-medium">Overview</span>
+            </button>
+            
+            <button onclick="showPage('console')" id="nav-console" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span class="font-medium">Console</span>
+            </button>
+
+            <button onclick="showPage('players')" id="nav-players" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="font-medium">Players</span>
+            </button>
+
+            <button onclick="showPage('config')" id="nav-config" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span class="font-medium">Config</span>
+            </button>
+        </nav>
+
+        <!-- Footer Action -->
+        <div class="p-4 border-t border-border">
+            <button onclick="openStopModal()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-danger/20 text-danger hover:bg-danger hover:text-white transition-all duration-200 font-medium group">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                <span>Stop Server</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <!-- Ambient Background -->
+        <div class="absolute inset-0 pointer-events-none z-0">
+            <div class="absolute top-[-20%] left-[20%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"></div>
+        </div>
+
+        <!-- Top Bar -->
+        <header class="h-20 border-b border-border flex items-center justify-between px-8 bg-background/50 backdrop-blur-sm z-10">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span>Dashboard</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <span class="text-white font-medium">Overview</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-xs text-gray-500">Uptime</p>
+                    <p class="text-sm font-mono text-white">14h 23m 12s</p>
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto p-8 z-10 relative">
             
-            <!-- Left Column: Palette & Atoms -->
-            <div class="lg:col-span-4 space-y-10">
+            <!-- Page: Overview -->
+            <div id="page-overview" class="max-w-7xl mx-auto space-y-6 transition-opacity duration-300">
                 
-                <!-- Color Palette -->
-                <section>
-                    <h3 class="text-sm font-semibold text-neutral-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
-                        Chromatic Aberration
-                    </h3>
-                    
-                    <div class="space-y-3">
-                        <!-- Primary -->
-                        <div class="group relative overflow-hidden rounded-2xl border border-white/5 bg-neutral-900/50 backdrop-blur-sm transition-all hover:border-orange-500/30">
-                            <div class="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="p-4 flex items-center gap-4 relative z-10">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-[0_0_15px_rgba(234,88,12,0.4)] ring-1 ring-white/20"></div>
-                                <div>
-                                    <p class="text-white font-medium">Primary Rust</p>
-                                    <p class="text-xs text-neutral-500 font-mono">#ea580c</p>
-                                </div>
+                <!-- KPI Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card 1 -->
+                    <div class="glass p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Status</p>
+                                <h3 class="text-2xl font-bold text-white mt-1">Running</h3>
+                            </div>
+                            <div class="p-2 rounded-lg bg-success/10 text-success">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                         </div>
+                        <div class="w-full bg-border h-1 rounded-full overflow-hidden">
+                            <div class="bg-success h-full w-full rounded-full"></div>
+                        </div>
+                    </div>
 
-                        <!-- Surface -->
-                        <div class="group relative overflow-hidden rounded-2xl border border-white/5 bg-[#171717]/80 backdrop-blur-md transition-all hover:border-white/10">
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-xl bg-[#171717] border border-white/10 shadow-inner"></div>
-                                <div>
-                                    <p class="text-white font-medium">Glass Surface</p>
-                                    <p class="text-xs text-neutral-500 font-mono">#171717 / 80%</p>
-                                </div>
+                    <!-- Card 2 -->
+                    <div class="glass p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Players</p>
+                                <h3 class="text-2xl font-bold text-white mt-1">12 <span class="text-sm text-gray-500 font-normal">/ 100</span></h3>
+                            </div>
+                            <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             </div>
                         </div>
+                        <div class="w-full bg-border h-1 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full w-[12%] rounded-full"></div>
+                        </div>
+                    </div>
 
-                        <!-- Success -->
-                        <div class="group relative overflow-hidden rounded-2xl border border-white/5 bg-neutral-900/50 backdrop-blur-sm transition-all hover:border-emerald-500/30">
-                            <div class="p-4 flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <!-- Card 3 -->
+                    <div class="glass p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Memory</p>
+                                <h3 class="text-2xl font-bold text-white mt-1">4.2 <span class="text-sm text-gray-500 font-normal">GB</span></h3>
+                            </div>
+                            <div class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                        </div>
+                        <div class="w-full bg-border h-1 rounded-full overflow-hidden">
+                            <div class="bg-primary h-full w-[45%] rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="glass p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">CPU Load</p>
+                                <h3 class="text-2xl font-bold text-white mt-1">18%</h3>
+                            </div>
+                            <div class="p-2 rounded-lg bg-purple-500/10 text-purple-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="w-full bg-border h-1 rounded-full overflow-hidden">
+                            <div class="bg-purple-500 h-full w-[18%] rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Chart Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- TPS Chart (Takes up 2 cols) -->
+                    <div class="lg:col-span-2 glass rounded-2xl p-6 border border-border">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">Performance Metrics</h3>
+                                <p class="text-sm text-gray-500">Ticks Per Second (TPS) & MSPT</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 rounded-lg bg-white/5 text-xs text-white border border-white/10 hover:bg-white/10 transition">1H</button>
+                                <button class="px-3 py-1 rounded-lg bg-transparent text-xs text-gray-500 hover:text-white transition">6H</button>
+                                <button class="px-3 py-1 rounded-lg bg-transparent text-xs text-gray-500 hover:text-white transition">24H</button>
+                            </div>
+                        </div>
+                        <div id="tps-chart" class="w-full h-[350px]"></div>
+                    </div>
+
+                    <!-- Resource Distribution -->
+                    <div class="glass rounded-2xl p-6 border border-border flex flex-col">
+                        <h3 class="text-lg font-semibold text-white mb-6">Resource Usage</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- RAM -->
+                            <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5">
+                                <div class="relative w-16 h-16 flex items-center justify-center">
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="32" cy="32" r="28" stroke="#262626" stroke-width="6" fill="none"></circle>
+                                        <circle cx="32" cy="32" r="28" stroke="#ea580c" stroke-width="6" fill="none" stroke-dasharray="175" stroke-dashoffset="78" stroke-linecap="round"></circle>
+                                    </svg>
+                                    <span class="absolute text-xs font-bold text-white">55%</span>
                                 </div>
-                                <div>
-                                    <p class="text-white font-medium">Signal Success</p>
-                                    <p class="text-xs text-neutral-500 font-mono">#10b981</p>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">RAM</p>
+                                    <p class="text-xs font-mono text-white">8.8G</p>
+                                </div>
+                            </div>
+
+                            <!-- CPU -->
+                            <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5">
+                                <div class="relative w-16 h-16 flex items-center justify-center">
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="32" cy="32" r="28" stroke="#262626" stroke-width="6" fill="none"></circle>
+                                        <circle cx="32" cy="32" r="28" stroke="#a855f7" stroke-width="6" fill="none" stroke-dasharray="175" stroke-dashoffset="140" stroke-linecap="round"></circle>
+                                    </svg>
+                                    <span class="absolute text-xs font-bold text-white">20%</span>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">CPU</p>
+                                    <p class="text-xs font-mono text-white">4 Cores</p>
+                                </div>
+                            </div>
+
+                            <!-- Disk -->
+                            <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5">
+                                <div class="relative w-16 h-16 flex items-center justify-center">
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="32" cy="32" r="28" stroke="#262626" stroke-width="6" fill="none"></circle>
+                                        <circle cx="32" cy="32" r="28" stroke="#10b981" stroke-width="6" fill="none" stroke-dasharray="175" stroke-dashoffset="100" stroke-linecap="round"></circle>
+                                    </svg>
+                                    <span class="absolute text-xs font-bold text-white">42%</span>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">Disk</p>
+                                    <p class="text-xs font-mono text-white">120G</p>
+                                </div>
+                            </div>
+
+                            <!-- Network -->
+                            <div class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5">
+                                <div class="relative w-16 h-16 flex items-center justify-center">
+                                    <svg class="w-full h-full transform -rotate-90">
+                                        <circle cx="32" cy="32" r="28" stroke="#262626" stroke-width="6" fill="none"></circle>
+                                        <circle cx="32" cy="32" r="28" stroke="#3b82f6" stroke-width="6" fill="none" stroke-dasharray="175" stroke-dashoffset="160" stroke-linecap="round"></circle>
+                                    </svg>
+                                    <span class="absolute text-xs font-bold text-white">10%</span>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">Net</p>
+                                    <p class="text-xs font-mono text-white">↑5M</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- Typography -->
-                <section>
-                    <h3 class="text-sm font-semibold text-neutral-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                        Typography
-                    </h3>
-                    <div class="p-6 rounded-2xl border border-white/5 bg-neutral-900/30 backdrop-blur-sm space-y-4">
-                        <div>
-                            <p class="text-3xl font-bold text-white">Aa</p>
-                            <p class="text-xs text-neutral-500 mt-1">Inter / Sans-Serif</p>
+                <!-- Recent Logs (Mini) -->
+                <div class="glass rounded-2xl border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-white/[0.02]">
+                        <h3 class="text-sm font-semibold text-white">Recent Console Activity</h3>
+                        <button onclick="showPage('console')" class="text-xs text-primary hover:text-primary-glow transition">View Full Console</button>
+                    </div>
+                    <div class="p-4 font-mono text-xs space-y-2 text-gray-400">
+                        <div class="flex gap-3">
+                            <span class="text-gray-600">14:23:01</span>
+                            <span class="text-success">[INFO]</span>
+                            <span>Player 'Notch' joined the game</span>
                         </div>
-                        <div class="h-px bg-white/5"></div>
-                        <div class="space-y-2">
-                            <p class="text-white text-lg">The quick brown fox jumps over the lazy dog.</p>
-                            <p class="text-neutral-400">The quick brown fox jumps over the lazy dog.</p>
-                            <p class="text-neutral-600 text-sm">The quick brown fox jumps over the lazy dog.</p>
+                        <div class="flex gap-3">
+                            <span class="text-gray-600">14:23:05</span>
+                            <span class="text-success">[INFO]</span>
+                            <span>Saving chunks for level 'ServerLevel'...</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="text-gray-600">14:24:12</span>
+                            <span class="text-primary">[WARN]</span>
+                            <span>Can't keep up! Is the server overloaded? Running 2005ms or 40 ticks behind</span>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
 
-            <!-- Right Column: Live Components -->
-            <div class="lg:col-span-8">
-                <h3 class="text-sm font-semibold text-neutral-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    Interface Mockup
-                </h3>
-
-                <!-- Glassmorphism Card -->
-                <div class="rounded-3xl border border-white/10 bg-[#121212]/60 backdrop-blur-xl shadow-2xl overflow-hidden relative">
-                    <!-- Decorative top gradient -->
-                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-red-500 to-purple-500 opacity-50"></div>
-
-                    <!-- Toolbar -->
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/[0.02]">
-                        <div class="flex items-center gap-4">
-                            <div class="flex gap-2">
-                                <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
-                            </div>
-                            <div class="h-4 w-px bg-white/10"></div>
-                            <span class="text-sm text-neutral-400 font-medium">Server Console</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                <span class="text-xs font-medium text-emerald-400">Online</span>
-                            </div>
+            <!-- Page: Console -->
+            <div id="page-console" class="max-w-7xl mx-auto h-full hidden flex flex-col">
+                <div class="glass rounded-2xl border border-border flex-1 flex flex-col overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-white/[0.02] flex justify-between items-center">
+                        <h3 class="text-sm font-semibold text-white">Server Console</h3>
+                        <div class="flex gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></span>
                         </div>
                     </div>
+                    <div class="flex-1 p-4 font-mono text-sm overflow-y-auto space-y-1 text-gray-300 bg-black/40">
+                        <p><span class="text-blue-500">[14:20:01]</span> <span class="text-success">[INFO]</span> Loading libraries, please wait...</p>
+                        <p><span class="text-blue-500">[14:20:02]</span> <span class="text-success">[INFO]</span> Loaded 127 recipes</p>
+                        <p><span class="text-blue-500">[14:20:04]</span> <span class="text-primary">[WARN]</span> Feature 'LegacyCombat' is deprecated</p>
+                        <p><span class="text-blue-500">[14:20:05]</span> <span class="text-success">[INFO]</span> Server started on *:25565</p>
+                        <p><span class="text-blue-500">[14:20:05]</span> <span class="text-purple-500">[DEBUG]</span> RCON running on 0.0.0.0:25575</p>
+                        <p><span class="text-blue-500">[14:23:01]</span> <span class="text-success">[INFO]</span> Player 'Notch' joined the game</p>
+                        <p><span class="text-blue-500">[14:23:05]</span> <span class="text-success">[INFO]</span> Saving chunks for level 'ServerLevel'...</p>
+                        <p><span class="text-blue-500">[14:24:12]</span> <span class="text-primary">[WARN]</span> Can't keep up! Is the server overloaded? Running 2005ms or 40 ticks behind</p>
+                    </div>
+                    <div class="p-4 border-t border-border bg-white/[0.02]">
+                        <div class="flex gap-2">
+                            <span class="text-primary font-mono">></span>
+                            <input type="text" placeholder="Type a command..." class="bg-transparent border-none outline-none text-white font-mono w-full placeholder-gray-600">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Content Area -->
-                    <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        
-                        <!-- Stats Column -->
-                        <div class="space-y-4">
-                            <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors group">
-                                <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">Memory Usage</p>
-                                <div class="flex items-end justify-between">
-                                    <span class="text-2xl font-bold text-white group-hover:text-orange-400 transition-colors">4.2 GB</span>
-                                    <span class="text-xs text-neutral-500 mb-1">/ 16 GB</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-neutral-800 rounded-full mt-3 overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-orange-500 to-orange-400 w-[26%] rounded-full"></div>
-                                </div>
+            <!-- Page: Players -->
+            <div id="page-players" class="max-w-7xl mx-auto hidden">
+                <div class="glass rounded-2xl border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-white/[0.02] flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-white">Online Players (12/100)</h3>
+                        <input type="text" placeholder="Search players..." class="bg-black/20 border border-border rounded-lg px-3 py-1.5 text-sm text-white outline-none focus:border-primary/50 transition">
+                    </div>
+                    <table class="w-full text-left text-sm text-gray-400">
+                        <thead class="bg-white/5 text-gray-200 font-medium">
+                            <tr>
+                                <th class="px-6 py-3">Player</th>
+                                <th class="px-6 py-3">UUID</th>
+                                <th class="px-6 py-3">Ping</th>
+                                <th class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <tr class="hover:bg-white/[0.02] transition">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded bg-gray-700"></div>
+                                    <span class="text-white font-medium">Notch</span>
+                                </td>
+                                <td class="px-6 py-4 font-mono text-xs">069a79f4-44e9-4726-a5be-fca90e38aaf5</td>
+                                <td class="px-6 py-4"><span class="text-success">24ms</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-danger hover:text-red-400 transition">Kick</button>
+                                    <span class="mx-2 text-gray-700">|</span>
+                                    <button class="text-primary hover:text-orange-400 transition">Ban</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-white/[0.02] transition">
+                                <td class="px-6 py-4 flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded bg-gray-700"></div>
+                                    <span class="text-white font-medium">Jeb_</span>
+                                </td>
+                                <td class="px-6 py-4 font-mono text-xs">853c80ef-3c37-49fd-aa49-938b674adae6</td>
+                                <td class="px-6 py-4"><span class="text-success">32ms</span></td>
+                                <td class="px-6 py-4">
+                                    <button class="text-danger hover:text-red-400 transition">Kick</button>
+                                    <span class="mx-2 text-gray-700">|</span>
+                                    <button class="text-primary hover:text-orange-400 transition">Ban</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Page: Config -->
+            <div id="page-config" class="max-w-7xl mx-auto hidden">
+                <div class="glass rounded-2xl border border-border p-6">
+                    <h3 class="text-lg font-semibold text-white mb-6">Server Configuration</h3>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-sm text-gray-400">Server Name</label>
+                                <input type="text" value="FerrumC Server" class="w-full bg-black/20 border border-border rounded-xl px-4 py-2.5 text-white outline-none focus:border-primary/50 transition">
                             </div>
-
-                            <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
-                                <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">Tick Rate</p>
-                                <div class="flex items-end justify-between">
-                                    <span class="text-2xl font-bold text-white">20.0</span>
-                                    <span class="text-xs text-emerald-500 mb-1">Perfect</span>
-                                </div>
-                                <div class="w-full h-1.5 bg-neutral-800 rounded-full mt-3 overflow-hidden">
-                                    <div class="h-full bg-emerald-500 w-[100%] rounded-full"></div>
-                                </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-gray-400">MOTD</label>
+                                <input type="text" value="A FerrumC Powered Server" class="w-full bg-black/20 border border-border rounded-xl px-4 py-2.5 text-white outline-none focus:border-primary/50 transition">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-gray-400">Max Players</label>
+                                <input type="number" value="100" class="w-full bg-black/20 border border-border rounded-xl px-4 py-2.5 text-white outline-none focus:border-primary/50 transition">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm text-gray-400">View Distance</label>
+                                <input type="number" value="10" class="w-full bg-black/20 border border-border rounded-xl px-4 py-2.5 text-white outline-none focus:border-primary/50 transition">
                             </div>
                         </div>
-
-                        <!-- Main Action Area -->
-                        <div class="md:col-span-2 space-y-6">
-                            <!-- Terminal Output Mock -->
-                            <div class="rounded-xl bg-black/40 border border-white/5 p-4 font-mono text-sm h-48 overflow-y-auto custom-scrollbar">
-                                <div class="space-y-1.5">
-                                    <p class="text-neutral-500"><span class="text-blue-400">[14:20:01]</span> <span class="text-emerald-400">[INFO]</span> Loading libraries, please wait...</p>
-                                    <p class="text-neutral-500"><span class="text-blue-400">[14:20:02]</span> <span class="text-emerald-400">[INFO]</span> Loaded 127 recipes</p>
-                                    <p class="text-neutral-500"><span class="text-blue-400">[14:20:04]</span> <span class="text-orange-400">[WARN]</span> Feature 'LegacyCombat' is deprecated</p>
-                                    <p class="text-neutral-300"><span class="text-blue-400">[14:20:05]</span> <span class="text-emerald-400">[INFO]</span> Server started on *:25565</p>
-                                    <p class="text-neutral-500"><span class="text-blue-400">[14:20:05]</span> <span class="text-purple-400">[DEBUG]</span> RCON running on 0.0.0.0:25575</p>
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex gap-4">
-                                <button class="flex-1 bg-white text-black font-bold py-3 px-6 rounded-xl hover:bg-neutral-200 transition-colors shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                                    Restart
-                                </button>
-                                <button class="flex-1 bg-white/5 text-white font-medium py-3 px-6 rounded-xl border border-white/10 hover:bg-white/10 transition-all hover:border-white/20 backdrop-blur-sm">
-                                    Console
-                                </button>
-                                <button class="px-4 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </div>
+                        <div class="pt-4 border-t border-border flex justify-end">
+                            <button class="px-6 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary-glow transition shadow-lg shadow-primary/20">Save Changes</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Stop Server Modal -->
+    <div id="stop-modal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-[#171717] border border-border rounded-2xl shadow-2xl max-w-md w-full transform scale-95 opacity-0 transition-all duration-200" id="modal-content">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 rounded-full bg-danger/10 text-danger flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Stop Server?</h3>
+                    <p class="text-gray-400 mb-6">Are you sure you want to stop the server? This action will disconnect all players and save the world data.</p>
+                    
+                    <div class="flex gap-3">
+                        <button onclick="closeStopModal()" class="flex-1 px-4 py-2.5 rounded-xl border border-border text-gray-300 hover:bg-white/5 hover:text-white transition font-medium">Cancel</button>
+                        <button onclick="confirmStopAction()" class="flex-1 px-4 py-2.5 rounded-xl bg-danger text-white hover:bg-red-600 transition font-medium shadow-lg shadow-danger/20">Stop Server</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <style>
-        /* Custom Scrollbar for that 'clean' feel */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+    <script>
+        // Navigation Logic
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('[id^="page-"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show target page
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update Sidebar State
+            document.querySelectorAll('nav button').forEach(btn => {
+                // Reset all buttons
+                btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
+                btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5');
+                
+                // Fix borders
+                btn.classList.remove('border');
+            });
+
+            // Activate current button
+            const activeBtn = document.getElementById('nav-' + pageId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5');
+                activeBtn.classList.add('bg-primary/10', 'text-primary', 'border', 'border-primary/20');
+            }
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+
+        // Modal Logic
+        const modal = document.getElementById('stop-modal');
+        const backdrop = document.getElementById('modal-backdrop');
+        const modalContent = document.getElementById('modal-content');
+
+        function openStopModal() {
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+
+        function closeStopModal() {
+            backdrop.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
+
+        function confirmStopAction() {
+            // Here you would send the HTMX request or WebSocket message
+            console.log('Stopping server...');
+            closeStopModal();
+            // Optional: Show a toast or notification
         }
-    </style>
+
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target === backdrop) {
+                closeStopModal();
+            }
+        });
+
+        // ApexCharts Configuration (TradingView Style)
+        var options = {
+            series: [{
+                name: 'TPS',
+                data: [20, 20, 19.8, 20, 20, 19.5, 18.2, 19.0, 20, 20, 20, 19.9, 20, 20, 20]
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                fontFamily: 'JetBrains Mono, monospace',
+                background: 'transparent',
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800
+                }
+            },
+            colors: ['#10b981'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.4,
+                    opacityTo: 0.05,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            xaxis: {
+                categories: ['14:00', '14:01', '14:02', '14:03', '14:04', '14:05', '14:06', '14:07', '14:08', '14:09', '14:10', '14:11', '14:12', '14:13', '14:14'],
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: {
+                    style: { colors: '#525252' }
+                }
+            },
+            yaxis: {
+                min: 0,
+                max: 22,
+                tickAmount: 4,
+                labels: {
+                    style: { colors: '#525252' }
+                }
+            },
+            grid: {
+                borderColor: '#262626',
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: { show: true }
+                },
+                xaxis: {
+                    lines: { show: true }
+                },
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 10
+                }
+            },
+            theme: {
+                mode: 'dark'
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#tps-chart"), options);
+        chart.render();
+    </script>
 </body>
 </html>
