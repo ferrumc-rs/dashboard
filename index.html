@@ -13,13 +13,6 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- ApexCharts -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -44,56 +37,15 @@
             }
         }
     </script>
+    
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0a0a; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #262626; 
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #404040; 
-        }
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-        /* Glassmorphism Utilities */
-        .glass {
-            background: rgba(23, 23, 23, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .glass-hover:hover {
-            background: rgba(23, 23, 23, 0.9);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Chart Tooltip Customization */
-        .apexcharts-tooltip {
-            background: #171717 !important;
-            border-color: #262626 !important;
-            color: #fff;
-        }
-        .apexcharts-tooltip-title {
-            background: #0a0a0a !important;
-            border-bottom: 1px solid #262626 !important;
-            font-family: 'Poppins', sans-serif !important;
-        }
-        .apexcharts-text {
-            fill: #737373 !important;
-            font-family: 'JetBrains Mono', monospace !important;
-        }
-        .apexcharts-gridline {
-            stroke: #262626 !important;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="bg-background text-gray-300 font-sans h-screen overflow-hidden flex selection:bg-primary selection:text-white">
 
@@ -530,178 +482,8 @@
         </div>
     </div>
 
-    <script>
-        // Navigation Logic
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('[id^="page-"]').forEach(el => {
-                el.classList.add('hidden');
-            });
-            
-            // Show target page
-            const target = document.getElementById('page-' + pageId);
-            if (target) {
-                target.classList.remove('hidden');
-            }
-
-            // Update Header Title
-            const titles = {
-                'overview': 'Overview',
-                'console': 'Server Console',
-                'players': 'Player Management',
-                'config': 'Configuration'
-            };
-            document.getElementById('header-title').innerText = titles[pageId] || 'Dashboard';
-
-            // Update Sidebar State
-            document.querySelectorAll('nav button').forEach(btn => {
-                // Reset all buttons
-                btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
-                btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-            });
-
-            // Activate current button
-            const activeBtn = document.getElementById('nav-' + pageId);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-                activeBtn.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
-            }
-        }
-
-        // Modal Logic
-        const modal = document.getElementById('power-modal');
-        const backdrop = document.getElementById('modal-backdrop');
-        const modalContent = document.getElementById('modal-content');
-
-        function openPowerModal() {
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                backdrop.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closePowerModal() {
-            backdrop.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 200);
-        }
-
-        // Confirmation Modal Logic
-        const confirmModal = document.getElementById('confirmation-modal');
-        const confirmBackdrop = document.getElementById('confirm-backdrop');
-        const confirmContent = document.getElementById('confirm-content');
-        const confirmTitle = document.getElementById('confirm-title');
-        const confirmMessage = document.getElementById('confirm-message');
-        const confirmYesBtn = document.getElementById('confirm-yes-btn');
-
-        let pendingAction = null;
-
-        function openConfirmModal(action) {
-            pendingAction = action;
-            
-            // Customize text based on action
-            if (action === 'stop') {
-                confirmTitle.innerText = 'Stop Server?';
-                confirmMessage.innerText = 'This will disconnect all players and shut down the server.';
-                confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
-            } else if (action === 'restart') {
-                confirmTitle.innerText = 'Restart Server?';
-                confirmMessage.innerText = 'The server will reload configuration and plugins.';
-                confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
-            }
-
-            confirmModal.classList.remove('hidden');
-            setTimeout(() => {
-                confirmBackdrop.classList.remove('opacity-0');
-                confirmContent.classList.remove('scale-95', 'opacity-0');
-                confirmContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeConfirmModal() {
-            confirmBackdrop.classList.add('opacity-0');
-            confirmContent.classList.remove('scale-100', 'opacity-100');
-            confirmContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                confirmModal.classList.add('hidden');
-                pendingAction = null;
-            }, 200);
-        }
-
-        confirmYesBtn.onclick = () => {
-            if (pendingAction) {
-                console.log('Executing: ' + pendingAction);
-                // Here you would actually call the backend
-            }
-            closeConfirmModal();
-            closePowerModal();
-        };
-
-        function confirmAction(action) {
-            openConfirmModal(action);
-        }
-
-        // Close modal on backdrop click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target === backdrop) {
-                closePowerModal();
-            }
-        });
-
-        // ApexCharts Configuration
-        var options = {
-            series: [{
-                name: 'TPS',
-                data: [20, 20, 19.8, 20, 20, 19.5, 18.2, 19.0, 20, 20, 20, 19.9, 20, 20, 20]
-            }],
-            chart: {
-                type: 'area',
-                height: 350,
-                fontFamily: 'JetBrains Mono, monospace',
-                background: 'transparent',
-                toolbar: { show: false },
-                animations: { enabled: true }
-            },
-            colors: ['#10b981'],
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.4,
-                    opacityTo: 0.05,
-                    stops: [0, 100]
-                }
-            },
-            dataLabels: { enabled: false },
-            stroke: { curve: 'smooth', width: 2 },
-            xaxis: {
-                categories: ['14:00', '14:01', '14:02', '14:03', '14:04', '14:05', '14:06', '14:07', '14:08', '14:09', '14:10', '14:11', '14:12', '14:13', '14:14'],
-                axisBorder: { show: false },
-                axisTicks: { show: false },
-                labels: { style: { colors: '#525252' } }
-            },
-            yaxis: {
-                min: 0, max: 22, tickAmount: 4,
-                labels: { style: { colors: '#525252' } }
-            },
-            grid: {
-                borderColor: '#262626',
-                strokeDashArray: 4,
-                yaxis: { lines: { show: true } },
-                xaxis: { lines: { show: true } },
-                padding: { top: 0, right: 0, bottom: 0, left: 10 }
-            },
-            theme: { mode: 'dark' }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#tps-chart"), options);
-        chart.render();
-    </script>
+    <!-- Scripts -->
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/charts.js"></script>
 </body>
 </html>
