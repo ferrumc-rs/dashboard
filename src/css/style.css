@@ -3,15 +3,18 @@
     width: 6px;
     height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-    background: #0a0a0a; 
+    background: #0a0a0a;
 }
+
 ::-webkit-scrollbar-thumb {
-    background: #262626; 
+    background: #262626;
     border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-    background: #404040; 
+    background: #404040;
 }
 
 /* Glassmorphism Utilities */
@@ -33,15 +36,18 @@
     border-color: #262626 !important;
     color: #fff;
 }
+
 .apexcharts-tooltip-title {
     background: #0a0a0a !important;
     border-bottom: 1px solid #262626 !important;
     font-family: 'Poppins', sans-serif !important;
 }
+
 .apexcharts-text {
     fill: #737373 !important;
     font-family: 'JetBrains Mono', monospace !important;
 }
+
 .apexcharts-gridline {
     stroke: #262626 !important;
 }

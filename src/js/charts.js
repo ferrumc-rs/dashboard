@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
             height: 350,
             fontFamily: 'JetBrains Mono, monospace',
             background: 'transparent',
-            toolbar: { show: false },
-            animations: { enabled: true }
+            toolbar: {show: false},
+            animations: {enabled: true}
         },
         colors: ['#10b981'],
         fill: {
@@ -25,26 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 stops: [0, 100]
             }
         },
-        dataLabels: { enabled: false },
-        stroke: { curve: 'smooth', width: 2 },
+        dataLabels: {enabled: false},
+        stroke: {curve: 'smooth', width: 2},
         xaxis: {
             categories: ['14:00', '14:01', '14:02', '14:03', '14:04', '14:05', '14:06', '14:07', '14:08', '14:09', '14:10', '14:11', '14:12', '14:13', '14:14'],
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-            labels: { style: { colors: '#525252' } }
+            axisBorder: {show: false},
+            axisTicks: {show: false},
+            labels: {style: {colors: '#525252'}}
         },
         yaxis: {
             min: 0, max: 22, tickAmount: 4,
-            labels: { style: { colors: '#525252' } }
+            labels: {style: {colors: '#525252'}}
         },
         grid: {
             borderColor: '#262626',
             strokeDashArray: 4,
-            yaxis: { lines: { show: true } },
-            xaxis: { lines: { show: true } },
-            padding: { top: 0, right: 0, bottom: 0, left: 10 }
+            yaxis: {lines: {show: true}},
+            xaxis: {lines: {show: true}},
+            padding: {top: 0, right: 0, bottom: 0, left: 10}
         },
-        theme: { mode: 'dark' }
+        theme: {mode: 'dark'}
     };
 
     var chart = new ApexCharts(chartElement, options);

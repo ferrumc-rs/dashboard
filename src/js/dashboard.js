@@ -4,7 +4,7 @@ function showPage(pageId) {
     document.querySelectorAll('[id^="page-"]').forEach(el => {
         el.classList.add('hidden');
     });
-    
+
     // Show target page
     const target = document.getElementById('page-' + pageId);
     if (target) {
@@ -58,7 +58,7 @@ function closePowerModal() {
     backdrop.classList.add('opacity-0');
     modalContent.classList.remove('scale-100', 'opacity-100');
     modalContent.classList.add('scale-95', 'opacity-0');
-    
+
     setTimeout(() => {
         modal.classList.add('hidden');
     }, 200);
@@ -76,7 +76,7 @@ let pendingAction = null;
 
 function openConfirmModal(action) {
     pendingAction = action;
-    
+
     // Customize text based on action
     if (action === 'stop') {
         confirmTitle.innerText = 'Stop Server?';
@@ -131,4 +131,61 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Start WebSocket connection
+    connectWebSocket();
 });
+
+
+// --- WebSocket Connection ---
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
+
+    socket.onopen = () => {
+        console.log("Connected to FerrumC Telemetry");
+    };
+
+    socket.onmessage = (event) => {
+        try {
+            const payload = JSON.parse(event.data);
+
+            if (payload.type === "Metric") {
+                updateMetrics(payload.data);
+            }
+        } catch (e) {
+            console.error("Error parsing WebSocket message:", e);
+        }
+    };
+
+    socket.onclose = () => {
+        console.log("Disconnected. Retrying in 2s...");
+        setTimeout(connectWebSocket, 2000);
+    };
+
+    socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        socket.close();
+    };
+}
+
+function updateMetrics(data) {
+    // 1. Update Memory
+    // Convert Bytes to GB for display consistency with design
+    const ramGB = (data.ram_usage / 1024 / 1024 / 1024).toFixed(1);
+    // const totalGB = (data.total_ram / 1024 / 1024 / 1024).toFixed(1);
+
+    const ramEl = document.getElementById('metric-ram-val');
+    if (ramEl) ramEl.innerText = `${ramGB} GB`;
+
+    // 2. Update CPU
+    const cpuEl = document.getElementById('metric-cpu-val');
+    if (cpuEl) cpuEl.innerText = `${data.cpu_usage.toFixed(0)}%`;
+
+    // 3. Update Players (if available in data)
+    // Assuming data might have online_players and max_players
+    if (data.online_players !== undefined) {
+        const playersEl = document.getElementById('metric-players-val');
+        if (playersEl) playersEl.innerText = data.online_players;
+    }
+}
