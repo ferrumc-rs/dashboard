@@ -1,191 +1,250 @@
-// Navigation Logic
-function showPage(pageId) {
-    // Hide all pages
-    document.querySelectorAll('[id^="page-"]').forEach(el => {
-        el.classList.add('hidden');
-    });
+/**
+ * FerrumC Dashboard Logic
+ * Handles navigation, modals, WebSocket connection, and metric updates.
+ */
 
-    // Show target page
-    const target = document.getElementById('page-' + pageId);
-    if (target) {
-        target.classList.remove('hidden');
-    }
+// ==========================================
+// UI Controller: Navigation & Layout
+// ==========================================
 
-    // Update Header Title
-    const titles = {
-        'overview': 'Overview',
-        'console': 'Server Console',
-        'players': 'Player Management',
-        'config': 'Configuration'
-    };
-    const titleEl = document.getElementById('header-title');
-    if (titleEl) {
-        titleEl.innerText = titles[pageId] || 'Dashboard';
-    }
+const UI = {
+    showPage(pageId) {
+        // Hide all pages
+        document.querySelectorAll('[id^="page-"]').forEach(el => {
+            el.classList.add('hidden');
+        });
 
-    // Update Sidebar State
-    document.querySelectorAll('nav button').forEach(btn => {
-        // Reset all buttons
-        btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
-        btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-    });
-
-    // Activate current button
-    const activeBtn = document.getElementById('nav-' + pageId);
-    if (activeBtn) {
-        activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-        activeBtn.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
-    }
-}
-
-// Modal Logic
-const modal = document.getElementById('power-modal');
-const backdrop = document.getElementById('modal-backdrop');
-const modalContent = document.getElementById('modal-content');
-
-function openPowerModal() {
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        backdrop.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
-
-function closePowerModal() {
-    if (!modal) return;
-    backdrop.classList.add('opacity-0');
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 200);
-}
-
-// Confirmation Modal Logic
-const confirmModal = document.getElementById('confirmation-modal');
-const confirmBackdrop = document.getElementById('confirm-backdrop');
-const confirmContent = document.getElementById('confirm-content');
-const confirmTitle = document.getElementById('confirm-title');
-const confirmMessage = document.getElementById('confirm-message');
-const confirmYesBtn = document.getElementById('confirm-yes-btn');
-
-let pendingAction = null;
-
-function openConfirmModal(action) {
-    pendingAction = action;
-
-    // Customize text based on action
-    if (action === 'stop') {
-        confirmTitle.innerText = 'Stop Server?';
-        confirmMessage.innerText = 'This will disconnect all players and shut down the server.';
-        confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
-    } else if (action === 'restart') {
-        confirmTitle.innerText = 'Restart Server?';
-        confirmMessage.innerText = 'The server will reload configuration and plugins.';
-        confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
-    }
-
-    confirmModal.classList.remove('hidden');
-    setTimeout(() => {
-        confirmBackdrop.classList.remove('opacity-0');
-        confirmContent.classList.remove('scale-95', 'opacity-0');
-        confirmContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
-
-function closeConfirmModal() {
-    confirmBackdrop.classList.add('opacity-0');
-    confirmContent.classList.remove('scale-100', 'opacity-100');
-    confirmContent.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        confirmModal.classList.add('hidden');
-        pendingAction = null;
-    }, 200);
-}
-
-if (confirmYesBtn) {
-    confirmYesBtn.onclick = () => {
-        if (pendingAction) {
-            console.log('Executing: ' + pendingAction);
-            // TODO: Call the backend API.
+        // Show target page
+        const target = document.getElementById('page-' + pageId);
+        if (target) {
+            target.classList.remove('hidden');
         }
-        closeConfirmModal();
-        closePowerModal();
-    };
+
+        // Update Header Title
+        const titles = {
+            'overview': 'Overview',
+            'console': 'Server Console',
+            'players': 'Player Management',
+            'config': 'Configuration'
+        };
+        const titleEl = document.getElementById('header-title');
+        if (titleEl) {
+            titleEl.innerText = titles[pageId] || 'Dashboard';
+        }
+
+        // Update Sidebar State
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
+            btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
+        });
+
+        // Activate current button
+        const activeBtn = document.getElementById('nav-' + pageId);
+        if (activeBtn) {
+            activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
+            activeBtn.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
+        }
+    }
+};
+
+// Expose globally for HTML onclick handlers
+window.showPage = UI.showPage;
+
+
+// ==========================================
+// UI Controller: Modals
+// ==========================================
+
+const Modals = {
+    power: {
+        el: document.getElementById('power-modal'),
+        backdrop: document.getElementById('modal-backdrop'),
+        content: document.getElementById('modal-content'),
+        open() {
+            if (!this.el) return;
+            this.el.classList.remove('hidden');
+            setTimeout(() => {
+                this.backdrop.classList.remove('opacity-0');
+                this.content.classList.remove('scale-95', 'opacity-0');
+                this.content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        },
+        close() {
+            if (!this.el) return;
+            this.backdrop.classList.add('opacity-0');
+            this.content.classList.remove('scale-100', 'opacity-100');
+            this.content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                this.el.classList.add('hidden');
+            }, 200);
+        }
+    },
+    confirm: {
+        el: document.getElementById('confirmation-modal'),
+        backdrop: document.getElementById('confirm-backdrop'),
+        content: document.getElementById('confirm-content'),
+        title: document.getElementById('confirm-title'),
+        message: document.getElementById('confirm-message'),
+        yesBtn: document.getElementById('confirm-yes-btn'),
+        pendingAction: null,
+
+        open(action) {
+            this.pendingAction = action;
+            if (action === 'stop') {
+                this.title.innerText = 'Stop Server?';
+                this.message.innerText = 'This will disconnect all players and shut down the server.';
+                this.yesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
+            } else if (action === 'restart') {
+                this.title.innerText = 'Restart Server?';
+                this.message.innerText = 'The server will reload configuration and plugins.';
+                this.yesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
+            }
+
+            this.el.classList.remove('hidden');
+            setTimeout(() => {
+                this.backdrop.classList.remove('opacity-0');
+                this.content.classList.remove('scale-95', 'opacity-0');
+                this.content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        },
+        close() {
+            this.backdrop.classList.add('opacity-0');
+            this.content.classList.remove('scale-100', 'opacity-100');
+            this.content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                this.el.classList.add('hidden');
+                this.pendingAction = null;
+            }, 200);
+        },
+        confirm() {
+            if (this.pendingAction) {
+                console.log('Executing: ' + this.pendingAction);
+                // TODO: Call the backend API.
+            }
+            this.close();
+            Modals.power.close();
+        }
+    }
+};
+
+// Expose globally
+window.openPowerModal = () => Modals.power.open();
+window.closePowerModal = () => Modals.power.close();
+window.confirmAction = (action) => Modals.confirm.open(action);
+window.closeConfirmModal = () => Modals.confirm.close();
+
+// Bind Confirm Button
+if (Modals.confirm.yesBtn) {
+    Modals.confirm.yesBtn.onclick = () => Modals.confirm.confirm();
 }
 
-function confirmAction(action) {
-    openConfirmModal(action);
-}
-
-// Event Listeners
+// Close modals on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
-    // Close modal on backdrop click
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target === backdrop) {
-                closePowerModal();
+    if (Modals.power.el) {
+        Modals.power.el.addEventListener('click', (e) => {
+            if (e.target === Modals.power.el || e.target === Modals.power.backdrop) {
+                Modals.power.close();
             }
         });
     }
-
-    // Start WebSocket connection
-    connectWebSocket();
 });
 
 
-// --- WebSocket Connection ---
-function connectWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
+// ==========================================
+// Telemetry: WebSocket & Metrics
+// ==========================================
 
-    socket.onopen = () => {
-        console.log("Connected to FerrumC Telemetry");
-    };
+const Telemetry = {
+    socket: null,
 
-    socket.onmessage = (event) => {
-        try {
-            const payload = JSON.parse(event.data);
+    connect() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const address_ip = window.location.hostname;
+        // get the port from url query prams
+        const address_port = new URLSearchParams(window.location.search).get('ws_port') || window.location.port;
+        const address = address_port ? `${address_ip}:${address_port}` : address_ip;
+        
+        this.socket = new WebSocket(`${protocol}//${address}/ws`);
 
-            if (payload.type === "Metric") {
-                updateMetrics(payload.data);
+        this.socket.onopen = () => {
+            console.log("Connected to FerrumC Telemetry");
+            this.updateStatus("Running");
+        };
+
+        this.socket.onmessage = (event) => {
+            try {
+                const payload = JSON.parse(event.data);
+                if (payload.type === "Metric") {
+                    this.updateMetrics(payload.data);
+                }
+            } catch (e) {
+                console.error("Error parsing WebSocket message:", e);
             }
-        } catch (e) {
-            console.error("Error parsing WebSocket message:", e);
+        };
+
+        this.socket.onclose = () => {
+            console.log("Disconnected. Retrying in 2s...");
+            this.updateStatus("Offline");
+            setTimeout(() => this.connect(), 2000);
+        };
+
+        this.socket.onerror = (err) => {
+            console.error("WebSocket error:", err);
+            this.socket.close();
+        };
+    },
+
+    updateStatus(status) {
+        const statusEl = document.getElementById('metric-status-text');
+        if (statusEl) statusEl.innerText = status;
+    },
+
+    updateMetrics(data) {
+        // 1. Memory
+        const ramFormatted = formatBytes(data.ram_usage);
+        const totalFormatted = formatBytes(data.total_ram);
+        const ramPercent = ((data.ram_usage / data.total_ram) * 100).toFixed(1);
+
+        this.setSafeText('metric-ram-val', ramFormatted);
+        this.setSafeStyle('metric-ram-bar', 'width', `${ramPercent}%`);
+        
+        this.setSafeText('resource-ram-percent', `${ramPercent}%`);
+        this.setSafeStyle('resource-ram-bar', 'width', `${ramPercent}%`);
+        this.setSafeText('resource-ram-detail', `${ramFormatted} / ${totalFormatted} Allocated`);
+
+        // 2. CPU
+        const cpuPercent = data.cpu_usage.toFixed(0);
+        this.setSafeText('metric-cpu-val', `${cpuPercent}%`);
+        this.setSafeStyle('metric-cpu-bar', 'width', `${cpuPercent}%`);
+        
+        this.setSafeText('resource-cpu-text', `${cpuPercent}%`);
+        this.setSafeStyle('resource-cpu-bar', 'width', `${cpuPercent}%`);
+
+        // 3. Uptime (Navbar)
+        if (data.uptime !== undefined) {
+            this.setSafeText('header-uptime', formatUptime(data.uptime));
         }
-    };
 
-    socket.onclose = () => {
-        console.log("Disconnected. Retrying in 2s...");
-        setTimeout(connectWebSocket, 2000);
-    };
+        // 4. Players
+        if (data.online_players !== undefined) {
+            this.setSafeText('metric-players-val', data.online_players);
+        }
+    },
 
-    socket.onerror = (err) => {
-        console.error("WebSocket error:", err);
-        socket.close();
-    };
-}
+    // Helper to safely set text content if element exists
+    setSafeText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+    },
 
-function updateMetrics(data) {
-    // 1. Update Memory
-    // Convert Bytes to GB for display consistency with design
-    const ramGB = (data.ram_usage / 1024 / 1024 / 1024).toFixed(1);
-    // const totalGB = (data.total_ram / 1024 / 1024 / 1024).toFixed(1);
-
-    const ramEl = document.getElementById('metric-ram-val');
-    if (ramEl) ramEl.innerText = `${ramGB} GB`;
-
-    // 2. Update CPU
-    const cpuEl = document.getElementById('metric-cpu-val');
-    if (cpuEl) cpuEl.innerText = `${data.cpu_usage.toFixed(0)}%`;
-
-    // 3. Update Players (if available in data)
-    // Assuming data might have online_players and max_players
-    if (data.online_players !== undefined) {
-        const playersEl = document.getElementById('metric-players-val');
-        if (playersEl) playersEl.innerText = data.online_players;
+    // Helper to safely set style property if element exists
+    setSafeStyle(id, prop, value) {
+        const el = document.getElementById(id);
+        if (el) el.style[prop] = value;
     }
-}
+};
+
+// Start Telemetry on Load
+document.addEventListener('DOMContentLoaded', () => {
+    Telemetry.connect();
+});

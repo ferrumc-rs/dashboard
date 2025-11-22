@@ -48,22 +48,23 @@ def bundle():
 
     # 3. Inline CSS
     print("Inlining CSS...")
-    css_path = 'src/css/style.css'
-    if os.path.exists(css_path):
-        css_content = read_file(css_path)
-        html = html.replace(f'<link rel="stylesheet" href="{css_path}">', f'<style>{css_content}</style>')
-    else:
-        print(f"Warning: {css_path} not found")
+    if os.path.exists('src/css'):
+        for file in os.listdir('src/css'):
+            if file.endswith('.css'):
+                path = f'src/css/{file}'
+                print(f"Inlining {path}...")
+                content = read_file(path)
+                html = html.replace(f'<link rel="stylesheet" href="{path}">', f'<style>{content}</style>')
 
     # 4. Inline JS
     print("Inlining JS...")
-    js_files = ['src/js/dashboard.js', 'src/js/charts.js']
-    for js_file in js_files:
-        if os.path.exists(js_file):
-            js_content = read_file(js_file)
-            html = html.replace(f'<script src="{js_file}"></script>', f'<script>{js_content}</script>')
-        else:
-            print(f"Warning: {js_file} not found")
+    if os.path.exists('src/js'):
+        for file in os.listdir('src/js'):
+            if file.endswith('.js'):
+                path = f'src/js/{file}'
+                print(f"Inlining {path}...")
+                content = read_file(path)
+                html = html.replace(f'<script src="{path}"></script>', f'<script>{content}</script>')
 
     # 5. Inline Favicon
     print("Inlining Favicon...")

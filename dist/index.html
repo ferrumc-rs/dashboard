@@ -52,10 +52,6 @@
         </script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-        <link
-                rel="stylesheet"
-                href="src/css/style.css"
-        >
     </head>
     <body class="bg-background text-gray-300 font-sans h-screen overflow-hidden flex selection:bg-primary selection:text-white">
 <aside class="w-64 h-full border-r border-border bg-surface/50 flex flex-col glass z-20">
@@ -212,7 +208,7 @@
     <div class="flex items-center gap-4">
         <div class="text-right">
             <p class="text-xs text-gray-500">Uptime</p>
-            <p class="text-sm font-mono text-white">14h 23m 12s</p>
+            <p class="text-sm font-mono text-white" id="header-uptime">-</p>
         </div>
     </div>
 </header>
@@ -226,7 +222,7 @@
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Status</p>
-                    <h3 class="text-2xl font-bold text-white mt-1">Running</h3>
+                    <h3 class="text-2xl font-bold text-white mt-1" id="metric-status-text">Offline</h3>
                 </div>
                 <div class="p-2 rounded-lg bg-success/10 text-success">
                     <svg
@@ -253,8 +249,8 @@
                 <div>
                     <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Players</p>
                     <h3 class="text-2xl font-bold text-white mt-1">
-                        <span id="metric-players-val">12</span>
-                        <span class="text-sm text-gray-500 font-normal">/ 100</span>
+                        <span id="metric-players-val">-</span>
+                        <span class="text-sm text-gray-500 font-normal">/ -</span>
                     </h3>
                 </div>
                 <div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
@@ -274,7 +270,7 @@
                 </div>
             </div>
             <div class="w-full bg-border h-1 rounded-full overflow-hidden">
-                <div class="bg-blue-500 h-full w-[12%] rounded-full"></div>
+                <div class="bg-blue-500 h-full w-[0%] rounded-full" id="metric-players-bar"></div>
             </div>
         </div>
         <div class="glass p-5 rounded-2xl">
@@ -284,7 +280,7 @@
                     <h3
                             class="text-2xl font-bold text-white mt-1"
                             id="metric-ram-val"
-                    >4.2 GB
+                    >-
                     </h3>
                 </div>
                 <div class="p-2 rounded-lg bg-primary/10 text-primary">
@@ -304,7 +300,7 @@
                 </div>
             </div>
             <div class="w-full bg-border h-1 rounded-full overflow-hidden">
-                <div class="bg-primary h-full w-[45%] rounded-full"></div>
+                <div class="bg-primary h-full w-[0%] rounded-full" id="metric-ram-bar"></div>
             </div>
         </div>
         <div class="glass p-5 rounded-2xl">
@@ -314,7 +310,7 @@
                     <h3
                             class="text-2xl font-bold text-white mt-1"
                             id="metric-cpu-val"
-                    >18%
+                    >-
                     </h3>
                 </div>
                 <div class="p-2 rounded-lg bg-purple-500/10 text-purple-500">
@@ -334,7 +330,7 @@
                 </div>
             </div>
             <div class="w-full bg-border h-1 rounded-full overflow-hidden">
-                <div class="bg-purple-500 h-full w-[18%] rounded-full"></div>
+                <div class="bg-purple-500 h-full w-[0%] rounded-full" id="metric-cpu-bar"></div>
             </div>
         </div>
     </div>
@@ -383,10 +379,10 @@
                             </svg>
                             CPU Usage
                         </span>
-                        <span class="text-white font-mono font-bold">18%</span>
+                        <span class="text-white font-mono font-bold" id="resource-cpu-text">-</span>
                     </div>
                     <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                        <div class="bg-purple-500 h-full w-[18%] rounded-full"></div>
+                        <div class="bg-purple-500 h-full w-[0%]" id="resource-cpu-bar"></div>
                     </div>
                     <p class="text-xs text-gray-500">Intel Core i7-13700K (16 Cores)</p>
                 </div>
@@ -408,12 +404,12 @@
                             </svg>
                             Memory
                         </span>
-                        <span class="text-white font-mono font-bold">55%</span>
+                        <span class="text-white font-mono font-bold" id="resource-ram-percent">-</span>
                     </div>
                     <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                        <div class="bg-primary h-full w-[55%] rounded-full"></div>
+                        <div class="bg-primary h-full w-[0%]" id="resource-ram-bar"></div>
                     </div>
-                    <p class="text-xs text-gray-500">8.8 GB / 16.0 GB Allocated</p>
+                    <p class="text-xs text-gray-500" id="resource-ram-detail">- / - Allocated</p>
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between items-end">
@@ -433,12 +429,12 @@
                             </svg>
                             Storage
                         </span>
-                        <span class="text-white font-mono font-bold">42%</span>
+                        <span class="text-white font-mono font-bold" id="resource-disk-percent">-</span>
                     </div>
                     <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                        <div class="bg-success h-full w-[42%] rounded-full"></div>
+                        <div class="bg-success h-full w-[0%]" id="resource-disk-bar"></div>
                     </div>
-                    <p class="text-xs text-gray-500">120 GB / 256 GB NVMe</p>
+                    <p class="text-xs text-gray-500" id="resource-disk-detail">- / - NVMe</p>
                 </div>
                 <div class="p-4 rounded-xl bg-white/5 border border-white/5">
                     <div class="flex justify-between items-center mb-2">
@@ -461,7 +457,7 @@
                             </svg>
                             <div>
                                 <p class="text-xs text-gray-500">Upload</p>
-                                <p class="text-sm font-mono text-white">5.2 MB/s</p>
+                                <p class="text-sm font-mono text-white" id="resource-net-upload">-</p>
                             </div>
                         </div>
                         <div class="w-px h-8 bg-white/10"></div>
@@ -481,7 +477,7 @@
                             </svg>
                             <div>
                                 <p class="text-xs text-gray-500">Download</p>
-                                <p class="text-sm font-mono text-white">1.8 MB/s</p>
+                                <p class="text-sm font-mono text-white" id="resource-net-download">-</p>
                             </div>
                         </div>
                     </div>
@@ -836,168 +832,247 @@
         </div>
     </div>
 </div>
-        <script>// Navigation Logic
-function showPage(pageId) {
-    // Hide all pages
-    document.querySelectorAll('[id^="page-"]').forEach(el => {
-        el.classList.add('hidden');
-    });
-    // Show target page
-    const target = document.getElementById('page-' + pageId);
-    if (target) {
-        target.classList.remove('hidden');
-    }
-    // Update Header Title
-    const titles = {
-        'overview': 'Overview',
-        'console': 'Server Console',
-        'players': 'Player Management',
-        'config': 'Configuration'
-    };
-    const titleEl = document.getElementById('header-title');
-    if (titleEl) {
-        titleEl.innerText = titles[pageId] || 'Dashboard';
-    }
-    // Update Sidebar State
-    document.querySelectorAll('nav button').forEach(btn => {
-        // Reset all buttons
-        btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
-        btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-    });
-    // Activate current button
-    const activeBtn = document.getElementById('nav-' + pageId);
-    if (activeBtn) {
-        activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
-        activeBtn.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
-    }
+        <script>/**
+ * Formats a number of bytes into a human-readable string.
+ * @param {number} bytes - The number of bytes.
+ * @param {number} decimals - The number of decimal places (default 1).
+ * @returns {string} - The formatted string (e.g., "1.5 GB").
+ */
+function formatBytes(bytes, decimals = 1) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
-// Modal Logic
-const modal = document.getElementById('power-modal');
-const backdrop = document.getElementById('modal-backdrop');
-const modalContent = document.getElementById('modal-content');
-function openPowerModal() {
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        backdrop.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
+/**
+ * Formats a duration in seconds into a human-readable string.
+ * @param {number} seconds - The duration in seconds.
+ * @returns {string} - The formatted string (e.g., "14h 23m 12s").
+ */
+function formatUptime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return `${h}h ${m}m ${s}s`;
 }
-function closePowerModal() {
-    if (!modal) return;
-    backdrop.classList.add('opacity-0');
-    modalContent.classList.remove('scale-100', 'opacity-100');
-    modalContent.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 200);
-}
-// Confirmation Modal Logic
-const confirmModal = document.getElementById('confirmation-modal');
-const confirmBackdrop = document.getElementById('confirm-backdrop');
-const confirmContent = document.getElementById('confirm-content');
-const confirmTitle = document.getElementById('confirm-title');
-const confirmMessage = document.getElementById('confirm-message');
-const confirmYesBtn = document.getElementById('confirm-yes-btn');
-let pendingAction = null;
-function openConfirmModal(action) {
-    pendingAction = action;
-    // Customize text based on action
-    if (action === 'stop') {
-        confirmTitle.innerText = 'Stop Server?';
-        confirmMessage.innerText = 'This will disconnect all players and shut down the server.';
-        confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
-    } else if (action === 'restart') {
-        confirmTitle.innerText = 'Restart Server?';
-        confirmMessage.innerText = 'The server will reload configuration and plugins.';
-        confirmYesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
-    }
-    confirmModal.classList.remove('hidden');
-    setTimeout(() => {
-        confirmBackdrop.classList.remove('opacity-0');
-        confirmContent.classList.remove('scale-95', 'opacity-0');
-        confirmContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
-function closeConfirmModal() {
-    confirmBackdrop.classList.add('opacity-0');
-    confirmContent.classList.remove('scale-100', 'opacity-100');
-    confirmContent.classList.add('scale-95', 'opacity-0');
-    setTimeout(() => {
-        confirmModal.classList.add('hidden');
-        pendingAction = null;
-    }, 200);
-}
-if (confirmYesBtn) {
-    confirmYesBtn.onclick = () => {
-        if (pendingAction) {
-            console.log('Executing: ' + pendingAction);
-            // TODO: Call the backend API.
+</script>
+        <script>/**
+ * FerrumC Dashboard Logic
+ * Handles navigation, modals, WebSocket connection, and metric updates.
+ */
+// ==========================================
+// UI Controller: Navigation & Layout
+// ==========================================
+const UI = {
+    showPage(pageId) {
+        // Hide all pages
+        document.querySelectorAll('[id^="page-"]').forEach(el => {
+            el.classList.add('hidden');
+        });
+        // Show target page
+        const target = document.getElementById('page-' + pageId);
+        if (target) {
+            target.classList.remove('hidden');
         }
-        closeConfirmModal();
-        closePowerModal();
-    };
+        // Update Header Title
+        const titles = {
+            'overview': 'Overview',
+            'console': 'Server Console',
+            'players': 'Player Management',
+            'config': 'Configuration'
+        };
+        const titleEl = document.getElementById('header-title');
+        if (titleEl) {
+            titleEl.innerText = titles[pageId] || 'Dashboard';
+        }
+        // Update Sidebar State
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/20');
+            btn.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
+        });
+        // Activate current button
+        const activeBtn = document.getElementById('nav-' + pageId);
+        if (activeBtn) {
+            activeBtn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-white/5', 'border-transparent');
+            activeBtn.classList.add('bg-primary/10', 'text-primary', 'border-primary/20');
+        }
+    }
+};
+// Expose globally for HTML onclick handlers
+window.showPage = UI.showPage;
+// ==========================================
+// UI Controller: Modals
+// ==========================================
+const Modals = {
+    power: {
+        el: document.getElementById('power-modal'),
+        backdrop: document.getElementById('modal-backdrop'),
+        content: document.getElementById('modal-content'),
+        open() {
+            if (!this.el) return;
+            this.el.classList.remove('hidden');
+            setTimeout(() => {
+                this.backdrop.classList.remove('opacity-0');
+                this.content.classList.remove('scale-95', 'opacity-0');
+                this.content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        },
+        close() {
+            if (!this.el) return;
+            this.backdrop.classList.add('opacity-0');
+            this.content.classList.remove('scale-100', 'opacity-100');
+            this.content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                this.el.classList.add('hidden');
+            }, 200);
+        }
+    },
+    confirm: {
+        el: document.getElementById('confirmation-modal'),
+        backdrop: document.getElementById('confirm-backdrop'),
+        content: document.getElementById('confirm-content'),
+        title: document.getElementById('confirm-title'),
+        message: document.getElementById('confirm-message'),
+        yesBtn: document.getElementById('confirm-yes-btn'),
+        pendingAction: null,
+        open(action) {
+            this.pendingAction = action;
+            if (action === 'stop') {
+                this.title.innerText = 'Stop Server?';
+                this.message.innerText = 'This will disconnect all players and shut down the server.';
+                this.yesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-danger text-white hover:bg-red-600 transition shadow-lg shadow-danger/20";
+            } else if (action === 'restart') {
+                this.title.innerText = 'Restart Server?';
+                this.message.innerText = 'The server will reload configuration and plugins.';
+                this.yesBtn.className = "flex-1 px-4 py-2 rounded-xl bg-warning text-white hover:bg-yellow-600 transition shadow-lg shadow-warning/20";
+            }
+            this.el.classList.remove('hidden');
+            setTimeout(() => {
+                this.backdrop.classList.remove('opacity-0');
+                this.content.classList.remove('scale-95', 'opacity-0');
+                this.content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        },
+        close() {
+            this.backdrop.classList.add('opacity-0');
+            this.content.classList.remove('scale-100', 'opacity-100');
+            this.content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                this.el.classList.add('hidden');
+                this.pendingAction = null;
+            }, 200);
+        },
+        confirm() {
+            if (this.pendingAction) {
+                console.log('Executing: ' + this.pendingAction);
+                // TODO: Call the backend API.
+            }
+            this.close();
+            Modals.power.close();
+        }
+    }
+};
+// Expose globally
+window.openPowerModal = () => Modals.power.open();
+window.closePowerModal = () => Modals.power.close();
+window.confirmAction = (action) => Modals.confirm.open(action);
+window.closeConfirmModal = () => Modals.confirm.close();
+// Bind Confirm Button
+if (Modals.confirm.yesBtn) {
+    Modals.confirm.yesBtn.onclick = () => Modals.confirm.confirm();
 }
-function confirmAction(action) {
-    openConfirmModal(action);
-}
-// Event Listeners
+// Close modals on backdrop click
 document.addEventListener('DOMContentLoaded', () => {
-    // Close modal on backdrop click
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target === backdrop) {
-                closePowerModal();
+    if (Modals.power.el) {
+        Modals.power.el.addEventListener('click', (e) => {
+            if (e.target === Modals.power.el || e.target === Modals.power.backdrop) {
+                Modals.power.close();
             }
         });
     }
-    // Start WebSocket connection
-    connectWebSocket();
 });
-// --- WebSocket Connection ---
-function connectWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const socket = new WebSocket(`${protocol}//${window.location.host}/ws`);
-    socket.onopen = () => {
-        console.log("Connected to FerrumC Telemetry");
-    };
-    socket.onmessage = (event) => {
-        try {
-            const payload = JSON.parse(event.data);
-            if (payload.type === "Metric") {
-                updateMetrics(payload.data);
+// ==========================================
+// Telemetry: WebSocket & Metrics
+// ==========================================
+const Telemetry = {
+    socket: null,
+    connect() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const address_ip = window.location.hostname;
+        // get the port from url query prams
+        const address_port = new URLSearchParams(window.location.search).get('ws_port') || window.location.port;
+        const address = address_port ? `${address_ip}:${address_port}` : address_ip;
+        this.socket = new WebSocket(`${protocol}//${address}/ws`);
+        this.socket.onopen = () => {
+            console.log("Connected to FerrumC Telemetry");
+            this.updateStatus("Running");
+        };
+        this.socket.onmessage = (event) => {
+            try {
+                const payload = JSON.parse(event.data);
+                if (payload.type === "Metric") {
+                    this.updateMetrics(payload.data);
+                }
+            } catch (e) {
+                console.error("Error parsing WebSocket message:", e);
             }
-        } catch (e) {
-            console.error("Error parsing WebSocket message:", e);
+        };
+        this.socket.onclose = () => {
+            console.log("Disconnected. Retrying in 2s...");
+            this.updateStatus("Offline");
+            setTimeout(() => this.connect(), 2000);
+        };
+        this.socket.onerror = (err) => {
+            console.error("WebSocket error:", err);
+            this.socket.close();
+        };
+    },
+    updateStatus(status) {
+        const statusEl = document.getElementById('metric-status-text');
+        if (statusEl) statusEl.innerText = status;
+    },
+    updateMetrics(data) {
+        // 1. Memory
+        const ramFormatted = formatBytes(data.ram_usage);
+        const totalFormatted = formatBytes(data.total_ram);
+        const ramPercent = ((data.ram_usage / data.total_ram) * 100).toFixed(1);
+        this.setSafeText('metric-ram-val', ramFormatted);
+        this.setSafeStyle('metric-ram-bar', 'width', `${ramPercent}%`);
+        this.setSafeText('resource-ram-percent', `${ramPercent}%`);
+        this.setSafeStyle('resource-ram-bar', 'width', `${ramPercent}%`);
+        this.setSafeText('resource-ram-detail', `${ramFormatted} / ${totalFormatted} Allocated`);
+        // 2. CPU
+        const cpuPercent = data.cpu_usage.toFixed(0);
+        this.setSafeText('metric-cpu-val', `${cpuPercent}%`);
+        this.setSafeStyle('metric-cpu-bar', 'width', `${cpuPercent}%`);
+        this.setSafeText('resource-cpu-text', `${cpuPercent}%`);
+        this.setSafeStyle('resource-cpu-bar', 'width', `${cpuPercent}%`);
+        // 3. Uptime (Navbar)
+        if (data.uptime !== undefined) {
+            this.setSafeText('header-uptime', formatUptime(data.uptime));
         }
-    };
-    socket.onclose = () => {
-        console.log("Disconnected. Retrying in 2s...");
-        setTimeout(connectWebSocket, 2000);
-    };
-    socket.onerror = (err) => {
-        console.error("WebSocket error:", err);
-        socket.close();
-    };
-}
-function updateMetrics(data) {
-    // 1. Update Memory
-    // Convert Bytes to GB for display consistency with design
-    const ramGB = (data.ram_usage / 1024 / 1024 / 1024).toFixed(1);
-    // const totalGB = (data.total_ram / 1024 / 1024 / 1024).toFixed(1);
-    const ramEl = document.getElementById('metric-ram-val');
-    if (ramEl) ramEl.innerText = `${ramGB} GB`;
-    // 2. Update CPU
-    const cpuEl = document.getElementById('metric-cpu-val');
-    if (cpuEl) cpuEl.innerText = `${data.cpu_usage.toFixed(0)}%`;
-    // 3. Update Players (if available in data)
-    // Assuming data might have online_players and max_players
-    if (data.online_players !== undefined) {
-        const playersEl = document.getElementById('metric-players-val');
-        if (playersEl) playersEl.innerText = data.online_players;
+        // 4. Players
+        if (data.online_players !== undefined) {
+            this.setSafeText('metric-players-val', data.online_players);
+        }
+    },
+    // Helper to safely set text content if element exists
+    setSafeText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+    },
+    // Helper to safely set style property if element exists
+    setSafeStyle(id, prop, value) {
+        const el = document.getElementById(id);
+        if (el) el.style[prop] = value;
     }
-}
+};
+// Start Telemetry on Load
+document.addEventListener('DOMContentLoaded', () => {
+    Telemetry.connect();
+});
 </script>
         <script>document.addEventListener('DOMContentLoaded', () => {
     const chartElement = document.querySelector("#tps-chart");
