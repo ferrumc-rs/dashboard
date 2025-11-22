@@ -81,7 +81,8 @@ def bundle():
     html = "\n".join([line for line in html.splitlines() if line.strip()])
 
     # Output
-    output_path = 'dashboard.min.html'
+    os.makedirs('dist', exist_ok=True)
+    output_path = 'dist/index.html'
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
     
