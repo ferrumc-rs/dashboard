@@ -1,38 +1,65 @@
-# sv
+# Dev mode
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Install pnpm if you don't have it.
+`npm i -g pnpm`
 
-## Creating a project
+install modules
+`pnpm i`
 
-If you're seeing this, you've probably already done this step. Congrats!
+run as dev mode
+`pnpm dev`
 
-```sh
-# create a new project in the current directory
-npx sv create
+since you are probably running this solely, it wont connect ferrumc by itself
+add ?ws_port=9000 to specify ws port (which port is ferrumc dashboard is available at)
 
-# create a new project in my-app
-npx sv create my-app
+# Building
+
+Install pnpm if you don't have it.
+`npm i -g pnpm`
+
+install modules
+`pnpm i`
+
+run as dev mode
+`pnpm build`
+
+there you go, you can look at the `./build` folder
+
+it should be something similar to this:
 ```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+build
+├── _app
+│   ├── env.js
+│   ├── immutable
+│   │   ├── assets
+│   │   │   ├── 0.DK2F3TiV.css
+│   │   │   └── 2.CaclQiDf.css
+│   │   ├── chunks
+│   │   │   ├── _0SE5BM9.js
+│   │   │   ├── B0VuPwGa.js
+│   │   │   ├── BsRj1CIK.js
+│   │   │   ├── Ckf7vI0t.js
+│   │   │   ├── CL4QMSaM.js
+│   │   │   ├── CT0T0Gak.js
+│   │   │   ├── CZobiwMx.js
+│   │   │   ├── DShSse47.js
+│   │   │   ├── lcHooioP.js
+│   │   │   └── Np4uj_ln.js
+│   │   ├── entry
+│   │   │   ├── app.K2miTMXF.js
+│   │   │   └── start.CeZMXrp4.js
+│   │   └── nodes
+│   │       ├── 0.Ouy00lpG.js
+│   │       ├── 1.DEYJthKk.js
+│   │       ├── 2.DganLgSn.js
+│   │       ├── 3.Dy140cfI.js
+│   │       ├── 4.BR8NlVsX.js
+│   │       └── 5.C-xy2jUo.js
+│   └── version.json
+├── config.html
+├── console.html
+├── favicon.ico
+├── index.html
+├── players.html
+└── robots.txt
 ```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
