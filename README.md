@@ -35,10 +35,10 @@ allows for:
 
 <div align="center">
 <h4>Desktop Dashboard</h4>
-<img src="https://github.com/ferrumc-rs/dashboard/blob/dashboard/assets/README/FerrumC%20Dashboard.png?raw=true" alt="FerrumC Dashboard Desktop" width="800">
+<img src="https://github.com/ferrumc-rs/dashboard/blob/master/assets/README/FerrumC%20Dashboard.png?raw=true" alt="FerrumC Dashboard Desktop" width="800">
 
 <h4>Mobile Experience</h4>
-<img src="https://github.com/ferrumc-rs/dashboard/blob/dashboard/assets/README/FerrumC%20Dashboard%20Mobile.png?raw=true" alt="FerrumC Dashboard Mobile" width="300">
+<img src="https://github.com/ferrumc-rs/dashboard/blob/master/assets/README/FerrumC%20Dashboard%20Mobile.png?raw=true" alt="FerrumC Dashboard Mobile" height="450">
 </div>
 
 ---
