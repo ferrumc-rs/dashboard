@@ -18,37 +18,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          python-version: '3.x'
-
-      - name: Bundle Assets
-        run: python build.py
+          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Minifier
-        run: npm install -g html-minifier
-
-      - name: Minify HTML
+      - name: Clean install
         run: |
-          html-minifier \
-            --collapse-whitespace \
-            --remove-comments \
-            --minify-css true \
-            --minify-js true \
-            --output dist/dashboard.min.html \
-            dist/index.html
+          rm -f pnpm-lock.yaml
+          rm -rf node_modules
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build SvelteKit
+        run: pnpm build
+
+      - name: Create ZIP archive
+        run: |
+          cd build
+          zip -r ../ferrumc-dashboard.zip .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ferrumc-dashboard
-          path: dist/dashboard.min.html
+          path: ferrumc-dashboard.zip
 
       - name: Update Latest Tag
         if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && github.event_name == 'push'
@@ -64,6 +64,6 @@ jobs:
         with:
           tag_name: latest
           name: Latest Build
-          files: dist/dashboard.min.html
+          files: ferrumc-dashboard.zip
           prerelease: true
           make_latest: true
