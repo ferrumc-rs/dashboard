@@ -263,15 +263,20 @@
 	</div>
 
 	<!-- Recent Console Activity -->
-	<div class="glass rounded-2xl border border-border overflow-hidden">
+	<div class="glass rounded-2xl border border-border overflow-hidden opacity-60">
 		<div class="px-6 py-4 border-b border-border flex justify-between items-center bg-secondary/50">
-			<h3 class="text-sm font-semibold text-foreground">Recent Console Activity</h3>
-			<a
-				href="/console"
-				class="text-xs text-primary hover:text-primary-glow transition"
-			>
+			<div class="flex items-center gap-3">
+				<h3 class="text-sm font-semibold text-foreground">Recent Console Activity</h3>
+				<span class="text-[0.625rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+					Placeholder
+				</span>
+			</div>
+			<span class="text-xs text-muted-foreground/50 cursor-not-allowed flex items-center gap-2">
 				View Full Console
-			</a>
+				<span class="text-[0.625rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+					Soon
+				</span>
+			</span>
 		</div>
 		<div class="p-4 font-mono text-xs space-y-2 text-muted-foreground">
 			<div class="flex gap-3">

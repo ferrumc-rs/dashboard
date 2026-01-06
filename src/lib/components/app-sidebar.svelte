@@ -5,7 +5,6 @@
 	import Settings from "@lucide/svelte/icons/settings";
 	import Zap from "@lucide/svelte/icons/zap";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-	import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 	import { page } from "$app/state";
 
 	interface NavItem {
@@ -70,31 +69,18 @@
 					{#each navItems as item (item.href)}
 						<Sidebar.MenuItem>
 							{#if item.comingSoon}
-								<Tooltip.Provider>
-									<Tooltip.Root>
-										<Tooltip.Trigger>
-											{#snippet child({ props })}
-												<div {...props}>
-													<Sidebar.MenuButton
-														isActive={false}
-														class="h-12 opacity-50 cursor-not-allowed pointer-events-none"
-													>
-														<item.icon
-															class="w-5 h-5"
-														/>
-														<span
-															class="font-medium"
-															>{item.label}</span
-														>
-													</Sidebar.MenuButton>
-												</div>
-											{/snippet}
-										</Tooltip.Trigger>
-										<Tooltip.Content sideOffset={-20}>
-											<p>Coming Soon</p>
-										</Tooltip.Content>
-									</Tooltip.Root>
-								</Tooltip.Provider>
+								<Sidebar.MenuButton
+									isActive={false}
+									class="h-12 opacity-50 cursor-not-allowed pointer-events-none"
+								>
+									<item.icon class="w-5 h-5" />
+									<span class="font-medium">{item.label}</span>
+									<span
+										class="ml-auto text-[0.625rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-data-[collapsible=icon]:hidden"
+									>
+										Coming Soon
+									</span>
+								</Sidebar.MenuButton>
 							{:else}
 								<Sidebar.MenuButton
 									isActive={page.url.pathname === item.href}
@@ -122,11 +108,15 @@
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
 				<Sidebar.MenuButton
-					onclick={onPowerClick}
-					class="h-12 text-destructive hover:bg-destructive hover:text-white transition-all duration-200"
+					class="h-12 text-destructive/50 cursor-not-allowed pointer-events-none"
 				>
 					<Zap class="w-5 h-5" />
 					<span class="font-medium">Power Options</span>
+					<span
+						class="ml-auto text-[0.625rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-data-[collapsible=icon]:hidden"
+					>
+						Soon
+					</span>
 				</Sidebar.MenuButton>
 			</Sidebar.MenuItem>
 		</Sidebar.Menu>
