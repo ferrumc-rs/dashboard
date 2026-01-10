@@ -42,18 +42,6 @@
 	const storageUsedFormatted = $derived(
 		formatBytes(telemetry.data.storageUsed ?? 0),
 	);
-	const storageTotalFormatted = $derived(
-		formatBytes(telemetry.data.storageTotal ?? 0),
-	);
-	const storagePercent = $derived(
-		telemetry.data.storageTotal && telemetry.data.storageTotal > 0
-			? (
-					((telemetry.data.storageUsed ?? 0) /
-						telemetry.data.storageTotal) *
-					100
-				).toFixed(1)
-			: "0",
-	);
 
 	// TPS chart data
 	const tpsData = $derived(telemetry.data.tpsHistory);

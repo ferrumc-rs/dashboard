@@ -21,7 +21,6 @@ export interface TelemetryData {
 	maxPlayers: number;
 	tps: number;
 	storageUsed?: number;
-	storageTotal?: number;
 	diskType?: string;
 	tpsHistory: TpsDataPoint[];
 }
@@ -52,7 +51,6 @@ function createTelemetryStore() {
 			maxPlayers: 100,
 			tps: 20,
 			storageUsed: undefined,
-			storageTotal: undefined,
 			diskType: undefined,
 			tpsHistory: []
 		}
@@ -126,7 +124,6 @@ function createTelemetryStore() {
 		max_players?: number;
 		tps?: number;
 		storage_used?: number;
-		storage_total?: number;
 		disk_type?: string;
 	}) {
 		if (data.ram_usage !== undefined) {
@@ -149,9 +146,6 @@ function createTelemetryStore() {
 		}
 		if (data.storage_used !== undefined) {
 			state.data.storageUsed = data.storage_used;
-		}
-		if (data.storage_total !== undefined) {
-			state.data.storageTotal = data.storage_total;
 		}
 		if (data.tps !== undefined) {
 			state.data.tps = data.tps;
