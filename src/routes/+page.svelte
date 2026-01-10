@@ -328,26 +328,24 @@
 				<!-- Storage Detail -->
 				<div class="space-y-2">
 					<div class="flex justify-between items-end">
-						<span
-							class="text-sm text-muted-foreground flex items-center gap-2"
-						>
+						<span class="text-sm text-muted-foreground flex items-center gap-2">
 							<HardDrive class="w-4 h-4" />
-							Storage
+							World Size
 						</span>
-						<span class="text-foreground font-mono font-bold"
-							>{storagePercent}%</span
-						>
+						<span class="text-foreground font-mono font-bold" id="resource-world-size">
+							{storageUsedFormatted}
+						</span>
 					</div>
-					<div
-						class="w-full bg-secondary h-2 rounded-full overflow-hidden"
-					>
+
+					<div class="w-full bg-secondary h-2 rounded-full overflow-hidden">
 						<div
-							class="bg-success h-full transition-all duration-300"
-							style="width: {storagePercent}%"
+								class="bg-success h-full transition-all duration-300"
+								style="width: 100%"
 						></div>
 					</div>
-					<p class="text-xs text-muted-foreground">
-						{storageUsedFormatted} / {storageTotalFormatted}
+
+					<p class="text-xs text-muted-foreground" id="resource-world-detail">
+						Current disk usage for world directory
 					</p>
 				</div>
 
