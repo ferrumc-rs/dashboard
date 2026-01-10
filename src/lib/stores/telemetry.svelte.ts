@@ -21,7 +21,6 @@ export interface TelemetryData {
 	maxPlayers: number;
 	tps: number;
 	storageUsed?: number;
-	diskType?: string;
 	tpsHistory: TpsDataPoint[];
 }
 
@@ -51,7 +50,6 @@ function createTelemetryStore() {
 			maxPlayers: 100,
 			tps: 20,
 			storageUsed: undefined,
-			diskType: undefined,
 			tpsHistory: []
 		}
 	});
